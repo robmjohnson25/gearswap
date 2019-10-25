@@ -262,27 +262,27 @@ function init_gear_sets()
 	--------------------------------------
 	-- 2H sets
 	--------------------------------------	
-	sets.engaged.2H = {
+	sets.engaged.TD = {
 	ammo="Ginsen",
-    	head="Flam. Zucchetto +1",
-    	body="Pumm. Lorica +2",
-    	hands="Flam. Manopolas +2",
-    	legs="Pumm. Cuisses +2",
-    	feet="Pumm. Calligae +2",
-    	neck="Warrior's Beads",
-    	waist="Ioskeha Belt",
-    	left_ear="Steelflash Earring",
-    	right_ear="Bladeborn Earring",
-    	left_ring="Moonbeam Ring",
-    	right_ring="Flamma Ring",
-    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+	head="Flam. Zucchetto +1",
+	body="Pumm. Lorica +2",
+	hands="Flam. Manopolas +2",
+	legs="Pumm. Cuisses +2",
+	feet="Pumm. Calligae +2",
+	neck="Warrior's Beads",
+	waist="Ioskeha Belt",
+	left_ear="Steelflash Earring",
+	right_ear="Bladeborn Earring",
+	left_ring="Moonbeam Ring",
+	right_ring="Flamma Ring",
+	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 	
-	sets.engaged.2H.AccLow = set_combine(sets.engaged.2H, {})
-	sets.engaged.2H.AccHigh = set_combine(sets.engaged.2H.AccLow, {})
-	sets.engaged.2H.PDT = set_combine(sets.engaged.2H, {})
-	sets.engaged.2H.AccLow.PDT = set_combine(sets.engaged.PDT, {})
-	sets.engaged.2H.AccHigh.PDT = set_combine(sets.engaged.AccLow.PDT, {})
+	sets.engaged.TD.AccLow = set_combine(sets.engaged.TD, {})
+	sets.engaged.TD.AccHigh = set_combine(sets.engaged.TD.AccLow, {})
+	sets.engaged.TD.PDT = set_combine(sets.engaged.TD, {})
+	sets.engaged.TD.AccLow.PDT = set_combine(sets.engaged.PDT, {})
+	sets.engaged.TD.AccHigh.PDT = set_combine(sets.engaged.AccLow.PDT, {})
 	--------------------------------------
 	-- DW sets
 	--------------------------------------
@@ -542,7 +542,7 @@ function update_combat_form()
 	if player.equipment.sub == 'Blurred Shild +1' or player.equipment.sub == 'empty' then
 		state.CombatForm:reset()
 	elseif player.equipment.sub == 'Eletta Grip' then
-		state.CombatForm:set('2H')
+		state.CombatForm:set('TD')
 	else
         	state.CombatForm:set('DW')
     end
