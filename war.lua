@@ -539,11 +539,11 @@ end
 
 function update_combat_form()
     -- Check for H2H or single-wielding
-    if player.equipment.sub == 'Blurred Shild +1' or player.equipment.sub == 'empty' then
-        state.CombatForm:reset()
-    else if player.equipment.sub == 'Eletta Grip' then
+	if player.equipment.sub == 'Blurred Shild +1' or player.equipment.sub == 'empty' then
+		state.CombatForm:reset()
+	elseif player.equipment.sub == 'Eletta Grip' then
 		state.CombatForm:set('2H')
 	else
-        state.CombatForm:set('DW')
+        	state.CombatForm:set('DW')
     end
 end
