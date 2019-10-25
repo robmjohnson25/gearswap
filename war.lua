@@ -17,10 +17,10 @@ end
 
 -- Setup vars that are user-independent.  state.Buff vars initialized here will automatically be tracked.
 function job_setup()
-			state.Buff['Aftermath'] = buffactive['Aftermath: Lv.1'] or
-            buffactive['Aftermath: Lv.2'] or
-            buffactive['Aftermath: Lv.3'] or false
-			state.Buff['Mighty Strikes'] = buffactive['Mighty Strikes'] or false
+	state.Buff['Aftermath'] = buffactive['Aftermath: Lv.1'] or
+	buffactive['Aftermath: Lv.2'] or
+	buffactive['Aftermath: Lv.3'] or false
+	state.Buff['Mighty Strikes'] = buffactive['Mighty Strikes'] or false
 end
 
 
