@@ -1,178 +1,83 @@
---[[     
- === Notes ===
- this is incomplete. my war just hit 99
- Using warcry = Upheaval
- Using bloodrage = Ukko's
---]]
---
+-------------------------------------------------------------------------------------------------------------------
+-- Setup functions for this job.  Generally should not be modified.
+-------------------------------------------------------------------------------------------------------------------
+--[[ Updated 9/18/2014, functions with Mote's new includes.
+-- Have not played WAR recently, please PM me with any errors 
+			BG: Fival
+			FFXIAH: Asura.Fiv
+]]--
 -- Initialization function for this job file.
 function get_sets()
     mote_include_version = 2
-    -- Load and initialize the include file.
-    include('Mote-Include.lua')
-    include('organizer-lib')
+
+	-- Load and initialize the include file.
+	include('Mote-Include.lua')
 end
- 
- 
--- Setup vars that are user-independent.
+
+
+-- Setup vars that are user-independent.  state.Buff vars initialized here will automatically be tracked.
 function job_setup()
-    include('Mote-TreasureHunter')
-    state.TreasureMode:set('None')
-    state.CapacityMode = M(false, 'Capacity Point Mantle')
-
-    --state.Buff.Souleater = buffactive.souleater or false
-    state.Buff.Berserk = buffactive.berserk or false
-    state.Buff.Retaliation = buffactive.retaliation or false
-    
-    wsList = S{ 'Savage Blade', 'Impulse Drive', 'Torcleaver'}
-    gsList = S{'Macbain', 'Kaquljaan', 'Nativus Halberd'}
-    war_sub_weapons = S{"Sangarius", "Usonmunku", "Perun", "Tanmogayi"}
-
-    get_combat_form()
-    get_combat_weapon()
+			state.Buff['Aftermath'] = buffactive['Aftermath: Lv.1'] or
+            buffactive['Aftermath: Lv.2'] or
+            buffactive['Aftermath: Lv.3'] or false
+			state.Buff['Mighty Strikes'] = buffactive['Mighty Strikes'] or false
 end
- 
- 
+
+
+-------------------------------------------------------------------------------------------------------------------
+-- User setup functions for this job.  Recommend that these be overridden in a sidecar file.
+-------------------------------------------------------------------------------------------------------------------
+
 -- Setup vars that are user-dependent.  Can override this function in a sidecar file.
 function user_setup()
-    -- Options: Override default values
-    state.OffenseMode:options('Normal', 'Mid', 'Acc')
-    state.HybridMode:options('Normal', 'PDT')
-    state.WeaponskillMode:options('Normal', 'Mid', 'Acc')
-    state.CastingMode:options('Normal')
-    state.IdleMode:options('Normal')
-    state.RestingMode:options('Normal')
-    state.PhysicalDefenseMode:options('PDT', 'Reraise')
-    state.MagicalDefenseMode:options('MDT')
-    
-    war_sj = player.sub_job == 'WAR' or false
-    state.drain = M(false)
-    
-    -- Additional local binds
-    send_command('bind ^= gs c cycle treasuremode')
-    send_command('bind != gs c toggle CapacityMode')
-    send_command('bind ^` input /ja "Hasso" <me>')
-    send_command('bind !` input /ja "Seigan" <me>')
-    
-    select_default_macro_book()
+	state.OffenseMode:options('Normal', 'AccLow', 'AccHigh')
+	state.RangedMode:options('Normal')
+	state.HybridMode:options('Normal', 'PDT')
+	state.WeaponskillMode:options('Normal', 'AccLow', 'AccHigh', 'Attack')
+	state.CastingMode:options('Normal')
+	state.IdleMode:options('Normal', 'Regen')
+	state.RestingMode:options('Normal')
+	state.PhysicalDefenseMode:options('PDT', 'Reraise')
+	state.MagicalDefenseMode:options('MDT')
+	
+	update_combat_weapon()
+	update_melee_groups()
+	--select_default_macro_book()
+	update_combat_form()
+	
+	-- Additional Binds
+	--send_command('alias g510_m1g13 input /ws "Ukko\'s Fury" <t>;')
+	--send_command('alias g510_m1g14 input /ws "King\'s Justice" <t>;')
+	--send_command('alias g510_m1g15 input /ws "Upheaval" <t>;')
 end
- 
--- Called when this job file is unloaded (eg: job change)
-function file_unload()
-    send_command('unbind ^`')
-    send_command('unbind !=')
-    send_command('unbind ^[')
-    send_command('unbind ![')
-    send_command('unbind @f9')
-end
- 
-       
--- Define sets and vars used by this job file.
+
 function init_gear_sets()
-    --------------------------------------
-    -- Start defining the sets
-    --------------------------------------
-    -- Augmented gear
-    
-    Odyssean = {}
-    Odyssean.Legs = {}
-    Odyssean.Legs.TP = { name="Odyssean Cuisses", augments={'"Triple Atk."+2','"Mag.Atk.Bns."+5','Quadruple Attack +1','Accuracy+17 Attack+17',}}
-    Odyssean.Legs.WS = { name="Odyssean Cuisses", augments={'Accuracy+25','DEX+1','Weapon skill damage +7%','Accuracy+10 Attack+10',}}
-    --Odyssean.Feet = {}
-    --Odyssean.Feet.FC = { name="Odyssean Greaves", augments={'Attack+20','"Fast Cast"+4','Accuracy+15',}}
+	
+	--------------------------------------
+	-- Precast sets
+	--------------------------------------
+	
+	-- Sets to apply to arbitrary JAs
+	sets.precast.JA.Berserk = {body="Pumm. Lorica +2",feet="Agoge Calligae +1"}
+    sets.precast.JA['Aggressor'] = {head="Pumm. Mask +1",body="Agoge Lorica +1"}
+    sets.precast.JA['Mighty Strikes'] = {hands="Agoge Mufflers +1"}
+	sets.precast.JA['Blood Rage'] = {body="Rvg. Lorica +2"}
+	sets.precast.JA['Warcry'] = {head="Agoge Mask +1"}
+	sets.precast.JA['Tomahawk'] = {ammo="Thr. Tomahawk",feet="Agoge Calligae +1"}
+	-- Sets to apply to any actions of spell.type
+	sets.precast.Waltz = {}
+		
+	-- Sets for specific actions within spell.type
+	sets.precast.Waltz['Healing Waltz'] = {}
 
+    -- Sets for fast cast gear for spells
+	sets.precast.FC = {}
 
-    Valorous = {}
-    Valorous.Feet = {}
-    Valorous.Feet.WS ={ name="Valorous Greaves", augments={'Weapon skill damage +5%','STR+9','Accuracy+15','Attack+11',}}
-    Valorous.Feet.TH = { name="Valorous Greaves", augments={'CHR+13','INT+1','"Treasure Hunter"+2','Accuracy+12 Attack+12','Mag. Acc.+1 "Mag.Atk.Bns."+1',}}
-    
-    sets.TreasureHunter = { 
-        head="White rarab cap +1", 
-        waist="Chaac Belt",
-        feet=Valorous.Feet.TH
-     }
+    -- Fast cast gear for specific spells or spell maps
+	sets.precast.FC.Utsusemi = set_combine(sets.precast.FC, {})
 
-     sets.Organizer = {
-         main="Devivifier",
-         sub="Sangarius",
-         neck="Bloodrain Strap",
-         legs="Odyssean Cuisses",
-         feet="Odyssean Greaves"
-     }
-
-    sets.MadrigalBonus = {
-        hands="Composer's Mitts"
-    }
-     -- Precast Sets
-     -- Precast sets to enhance JAs
-     --sets.precast.JA['Mighty Strikes'] = {hands="Fallen's Finger Gauntlets +1"}
-     sets.precast.JA['Blood Rage'] = { body="Boii Lorica +1" }
-     sets.precast.JA['Provoke'] = {74ody="Pummeler's lorica +2" }
-     sets.precast.JA['Berserk'] = { hands="Warrior's Calligae +2", back="Cichol's Mantle"}
-     sets.precast.JA['Aggressor'] = { head="Pummeler's Mask +1"}
-
-     sets.CapacityMantle  = { back="Mecistopins Mantle" }
-     --sets.Berserker       = { neck="Berserker's Torque" }
-     sets.WSDayBonus      = { head="Gavialis Helm" }
-     -- TP ears for night and day, AM3 up and down. 
-     sets.BrutalLugra     = { ear1="Brutal Earring", ear2="Lugra Earring +1" }
-     sets.Lugra           = { ear1="Lugra Earring +1" }
-     sets.Brutal          = { ear1="Brutal Earring" }
- 
-     sets.reive = {neck="Ygnas's Resolve +1"}
-     -- Waltz set (chr and vit)
-     sets.precast.Waltz = {
-        -- head="Yaoyotl Helm",
-     }
-            
-     -- Fast cast sets for spells
-     sets.precast.FC = {
-         ammo="Impatiens",
-         head="Cizin Helm +1",
-         body="Odyssean Chestplate",
-         ear1="Loquacious Earring",
-         hands="Leyline Gloves",
-         ring1="Weatherspoon Ring", -- 10 macc
-         ring2="Prolix Ring",
-         legs="Eschite Cuisses",
-         feet="Odyssean Greaves"
-     }
-     sets.precast.FC.Utsusemi = set_combine(sets.precast.FC, { neck="Magoraga Beads" })
-
-     -- Midcast Sets
-     sets.midcast.FastRecast = {
-         ammo="Impatiens",
-         head="Otomi Helm",
-         feet="Odyssean Greaves"
-     }
-            
-     -- Specific spells
-     sets.midcast.Utsusemi = {
-         head="Otomi Helm",
-         feet="Odyssean Greaves"
-     }
- 
-     -- Ranged for xbow
-     sets.precast.RA = {
-         head="Otomi Helm",
-         hands="Buremte Gloves",
-         feet="Ejekamal Boots"
-     }
-     sets.midcast.RA = {
-         head="White rarab cap +1",
-        --  neck="Iqabi Necklace",
-         ear2="Tripudio Earring",
-         hands="Buremte Gloves",
-         ring1="Beeline Ring",
-         ring2="Garuda Ring",
-         waist="Chaac Belt",
-         legs="Aetosaur Trousers +1",
-     }
-
-     -- WEAPONSKILL SETS
-     -- General sets
-     sets.precast.WS = {
+	-- Weaponskill sets
+	sets.precast.WS = {
 	ammo="Yetshila",
     head="Flam. Zucchetto +1",
     body="Pumm. Lorica +2",
@@ -186,101 +91,73 @@ function init_gear_sets()
     left_ring="Moonbeam Ring",
     right_ring="Flamma Ring",
     back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-		}
+	}
+	
+	sets.precast.WS.AccLow = set_combine(sets.precast.WS, {})
+	sets.precast.WS.AccHigh = set_combine(sets.precast.WS.AccLow, {})
+	sets.precast.WS.Attack = set_combine(sets.precast.WS, {})
+	sets.precast.WS.MS = set_combine(sets.precast.WS, {})
+	
+	-- Specific weaponskill sets.
+	--[[sets.precast.WS['Upheaval'] = {}
+	sets.precast.WS['Upheaval'].AccLow = set_combine(sets.precast.WS['Upheaval'], {})
+	sets.precast.WS['Upheaval'].AccHigh = set_combine(sets.precast.WS['Upheaval'].AccLow, {})
+	sets.precast.WS['Upheaval'].Attack = set_combine(sets.precast.WS['Upheaval'], {})
+	sets.precast.WS['Upheaval'].MS = set_combine(sets.precast.WS['Upheaval'], {ammo="Yetshila +1",back="Cavaros Mantle",feet="Huginn Gambieras"})
+	
+	sets.precast.WS['Ukko\'s Fury'] = {}
+	sets.precast.WS['Ukko\'s Fury'].AccLow = set_combine(sets.precast.WS['Ukko\'s Fury'], {})
+	sets.precast.WS['Ukko\'s Fury'].AccHigh = set_combine(sets.precast.WS['Ukko\'s Fury'].AccLow, {})
+	sets.precast.WS['Ukko\'s Fury'].Attack = set_combine(sets.precast.WS['Ukko\'s Fury'], {})
+	sets.precast.WS['Ukko\'s Fury'].MS = set_combine(sets.precast.WS['Ukko\'s Fury'], {})
+	
+	sets.precast.WS['King\'s Justice'] = set_combine(sets.precast.WS, {})
+	sets.precast.WS['King\'s Justice'].AccLow = set_combine(sets.precast.WS['King\'s Justice'], {})
+	sets.precast.WS['King\'s Justice'].AccHigh = set_combine(sets.precast.WS['King\'s Justice'].AccLow, {})
+	sets.precast.WS['King\'s Justice'].Attack = set_combine(sets.precast.WS['King\'s Justice'], {})
+	sets.precast.WS['King\'s Justice'].MS = set_combine(sets.precast.WS['King\'s Justice'], {ammo="Yetshila +1",back="Cavaros Mantle",feet="Huginn Gambieras"})
+	
+	sets.precast.WS['Metatron Torment'] = set_combine(sets.precast.WS, {})
+	sets.precast.WS['Metatron Torment'].AccLow = set_combine(sets.precast.WS['Metatron Torment'], {})
+	sets.precast.WS['Metatron Torment'].AccHigh = set_combine(sets.precast.WS['Metatron Torment'].AccLow, {})
+	sets.precast.WS['Metatron Torment'].Attack = set_combine(sets.precast.WS['Metatron Torment'], {})
+	sets.precast.WS['Metatron Torment'].MS = set_combine(sets.precast.WS['Metatron Torment'], {ammo="Yetshila +1",back="Cavaros Mantle",feet="Huginn Gambieras"})
+	
+	sets.precast.WS['Fell Cleave'] = set_combine(sets.precast.WS, {})
+	sets.precast.WS['Fell Cleave'].AccLow = set_combine(sets.precast.WS['Fell Cleave'], {})
+	sets.precast.WS['Fell Cleave'].AccHigh = set_combine(sets.precast.WS['Fell Cleave'].AccLow, {})
+	sets.precast.WS['Fell Cleave'].Attack = set_combine(sets.precast.WS['Fell Cleave'], {})
+	sets.precast.WS['Fell Cleave'].MS = set_combine(sets.precast.WS['Fell Cleave'], {ammo="Yetshila +1",back="Cavaros Mantle",feet="Huginn Gambieras"})
+	
+	sets.precast.WS['Resolution'] = set_combine(sets.precast.WS, {})
+	sets.precast.WS['Resolution'].AccLow = set_combine(sets.precast.WS['Resolution'], {})
+	sets.precast.WS['Resolution'].AccHigh = set_combine(sets.precast.WS['Resolution'].AccLow, {})
+	sets.precast.WS['Resolution'].Attack = set_combine(sets.precast.WS['Resolution'], {})
+	sets.precast.WS['Resolution'].MS = set_combine(sets.precast.WS['Resolution'], {ammo="Yetshila +1",back="Cavaros Mantle",feet="Huginn Gambieras"})
+	]]
 
-     --[[sets.precast.WS.Mid = set_combine(sets.precast.WS, {
-        --  ammo="Ginsen",
-        --  head="Valorous Mask",
-         --body="Ravenous Breastplate",
-     })
-     sets.precast.WS.Acc = set_combine(sets.precast.WS.Mid, {
-         ear1="Cessance Earring",
-         waist="Olseni Belt",
-     })
-    
-    sets.precast.WS['Upheaval'] = set_combine(sets.precast.WS, {
-        neck="Flame Gorget",
-        waist="Light Belt",
-    })
- 
-    sets.precast.WS["Ukko's Fury"] = set_combine(sets.precast.WS, {
-        ammo="Knobkierrie",
-        neck="Breeze Gorget",
-        waist="Metalsinger Belt",
-        feet=Valorous.Feet.WS
-    })
-     -- RESOLUTION
-     -- 86-100% STR
-     sets.precast.WS.Resolution = set_combine(sets.precast.WS, {
-         neck="Breeze Gorget",
-         waist="Soil Belt"
-     })
-     sets.precast.WS.Resolution.Mid = set_combine(sets.precast.WS.Resolution, {
-         ammo="Ginsen",
-         head="Valorous Mask",
-     })
-     sets.precast.WS.Resolution.Acc = set_combine(sets.precast.WS.Resolution.Mid, sets.precast.WS.Acc) 
+	--------------------------------------
+	-- Midcast sets
+	--------------------------------------
 
-     -- TORCLEAVER 
-     -- VIT 80%
-     sets.precast.WS.Torcleaver = set_combine(sets.precast.WS, {
-         head="Odyssean Helm",
-         ammo="Knobkierrie",
-         neck="Aqua Gorget",
-         legs=Odyssean.Legs.WS,
-         waist="Caudata Belt"
-     })
-     sets.precast.WS.Torcleaver.Mid = set_combine(sets.precast.WS.Mid, {
-        --  ammo="Ginsen",
-         neck="Aqua Gorget",
-     })
-     sets.precast.WS.Torcleaver.Acc = set_combine(sets.precast.WS.Torcleaver.Mid, sets.precast.WS.Acc)
+    -- Generic spell recast set
+	sets.midcast.FastRecast = {}
+		
+	-- Specific spells
+	sets.midcast.Utsusemi = {}
 
-    sets.precast.WS.Stardiver = set_combine(sets.precast.WS, {
-        neck="Shadow Gorget",
-        waist="Soil Belt",
-        legs="Sulevia's Cuisses +2",
-    })
-    sets.precast.WS['Impulse Drive'] = set_combine(sets.precast.WS, {
-        head="Valorous Mask",
-        neck="Shadow Gorget",
-        ear1="Ishvara Earring",
-        waist="Metalsinger Belt",
-        feet=Valorous.Feet.WS
-    })
-    sets.precast.WS['Savage Blade'] = set_combine(sets.precast.WS['Impulse Drive'], {
-        neck="Breeze Gorget",
-    })
-     -- Sword WS's
-     -- SANGUINE BLADE
-     -- 50% MND / 50% STR Darkness Elemental
-     sets.precast.WS['Sanguine Blade'] = set_combine(sets.precast.WS, {
-         neck="Stoicheion Medal",
-         ear1="Friomisi Earring",
-         hands="Odyssean Gauntlets",
-         legs="Limbo Trousers",
-         ring2="Acumen Ring",
-         back="Toro Cape",
-     })
-     sets.precast.WS['Sanguine Blade'].Mid = set_combine(sets.precast.WS['Sanguine Blade'], sets.precast.WS.Mid)
-     sets.precast.WS['Sanguine Blade'].Acc = set_combine(sets.precast.WS['Sanguine Blade'], sets.precast.WS.Acc)
+	
+	--------------------------------------
+	-- Idle/resting/defense/etc sets
+	--------------------------------------
+	
+	-- Resting sets
+	sets.resting = {}
+	
 
-     -- REQUISCAT
-     -- 73% MND - breath damage
-     sets.precast.WS.Requiescat = set_combine(sets.precast.WS, {
-         neck="Shadow Gorget",
-         back="Cichol's Mantle",
-         waist="Soil Belt",
-     })
-     sets.precast.WS.Requiescat.Mid = set_combine(sets.precast.WS.Requiscat, sets.precast.WS.Mid)
-     sets.precast.WS.Requiescat.Acc = set_combine(sets.precast.WS.Requiscat, sets.precast.WS.Acc)
-     ]]
-     -- Resting sets
-     sets.resting = {}
- 
-     -- Idle sets
-     sets.idle.Town = {
-    ammo="Ginsen",
+	-- Idle sets
+	sets.idle = {
+	ammo="Ginsen",
     head="Flam. Zucchetto +1",
     body="Pumm. Lorica +2",
     hands="Flam. Manopolas +2",
@@ -293,79 +170,36 @@ function init_gear_sets()
     left_ring="Moonbeam Ring",
     right_ring="Flamma Ring",
     back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-     }
-     
-     sets.idle.Field = set_combine(sets.idle.Town, {      
-     })
-     sets.idle.Regen = set_combine(sets.idle.Field, {
-     })
- 
-     sets.idle.Weak = {
-         
-     }
+	}
 
-     -- Defense sets
-     sets.defense.PDT = {
-         ammo="Yetshila",
-    head="Sulevia's Mask +1",
-    body="Tartarus Platemail",
-    hands="Sulev. Gauntlets +1",
-    legs="Sulevi. Cuisses +1",
-    feet="Sulev. Leggings +1",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Suppanomimi",
-    right_ear="Brutal Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-     }
-     sets.defense.Reraise = sets.idle.Weak
- 
-     sets.defense.MDT = set_combine(sets.defense.PDT, {
-             })
- 
-     sets.Kiting = {}
- 
-     sets.Reraise = {}
+	sets.idle.Town = set_combine(sets.idle, {})
+	
+	sets.idle.Regen = set_combine(sets.idle, {})
+	
+	sets.idle.Weak = set_combine(sets.idle, {})
+	
+	-- Defense sets
+	sets.defense.PDT = {}
+	sets.defense.Reraise = set_combine(sets.defense.PDT, {})
+	sets.defense.MDT = {}
 
-     -- Defensive sets to combine with various weapon-specific sets below
-     -- These allow hybrid acc/pdt sets for difficult content
-     sets.Defensive = {
-         ammo="Yetshila",
-    head="Sulevia's Mask +1",
-    body="Tartarus Platemail",
-    hands="Sulev. Gauntlets +1",
-    legs="Sulevi. Cuisses +1",
-    feet="Sulev. Leggings +1",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Suppanomimi",
-    right_ear="Brutal Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-     }
-     sets.Defensive_Mid = {
-     ammo="Ginsen",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Flam. Gambieras +1",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-     }
-         
-     
-     -- Engaged set, assumes Liberator
-	sets.engaged={
-    ammo="Ginsen",
+    -- Gear to wear for kiting
+	sets.Kiting = {}
+
+	--------------------------------------
+	-- Engaged sets
+	--------------------------------------
+
+	-- Variations for TP weapon and (optional) offense/defense modes.  Code will fall back on previous
+	-- sets if more refined versions aren't defined.
+	-- If you create a set with both offense and defense modes, the offense mode should be first.
+	-- EG: sets.engaged.Dagger.Accuracy.Evasion
+	
+	-- Normal melee group
+	-- If using a weapon that isn't specified later, the basic engaged sets should automatically be used.
+	-- Equip the weapon you want to use and engage, disengage, or force update with f12, the correct gear will be used; default weapon is whats equip when file loads.
+	sets.engaged = {
+	ammo="Ginsen",
     head="Flam. Zucchetto +1",
     body="Pumm. Lorica +2",
     hands="Flam. Manopolas +2",
@@ -378,269 +212,338 @@ function init_gear_sets()
     left_ring="Moonbeam Ring",
     right_ring="Flamma Ring",
     back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
-     }
-     sets.engaged.Mid = set_combine(sets.engaged, {
-         
-     })
-     sets.engaged.Acc = set_combine(sets.engaged.Mid, {
-              })
-
-     sets.engaged.PDT = set_combine(sets.engaged, sets.Defensive)
-     sets.engaged.Mid.PDT = set_combine(sets.engaged.Mid, sets.Defensive_Mid)
-     sets.engaged.Acc.PDT = set_combine(sets.engaged.Acc, sets.Defensive_Acc)
-
-     sets.engaged.DW = set_combine(sets.engaged, {
-             })
-     sets.engaged.OneHand = set_combine(sets.engaged, {
-     })
-     sets.engaged.GreatSword = set_combine(sets.engaged, {
-              })
-     sets.engaged.GreatSword.Mid = set_combine(sets.engaged.Mid, {
-              })
-     sets.engaged.GreatSword.Acc = set_combine(sets.engaged.Acc, {
-     })
-
-     sets.engaged.Reraise = set_combine(sets.engaged, {
-     	     })
-     sets.buff.Berserk = { 
-         feet="Agoge Calligae +1", 
-		 Body="Pummeler's lorica +2"
-		 
-     }
-     sets.buff.Retaliation = { 
-         
-     }
-    
+	}
+	
+	sets.engaged.AccLow = set_combine(sets.engaged, {})
+	sets.engaged.AccHigh = set_combine(sets.engaged.AccLow, {})
+	sets.engaged.PDT = set_combine(sets.engaged, {})
+	sets.engaged.AccLow.PDT = set_combine(sets.engaged.PDT, {})
+	sets.engaged.AccHigh.PDT = set_combine(sets.engaged.AccLow.PDT, {})
+	
+	--[[sets.engaged.Conqueror = {}
+	sets.engaged.Conqueror.AccLow = set_combine(sets.engaged.Conqueror, {})
+	sets.engaged.Conqueror.AccHigh = set_combine(sets.engaged.Conqueror.AccLow, {})
+	sets.engaged.Conqueror.PDT = set_combine(sets.engaged.Conqueror, {})
+	sets.engaged.Conqueror.AccLow.PDT = set_combine(sets.engaged.Conqueror.PDT, {})
+	sets.engaged.Conqueror.AccHigh.PDT = set_combine(sets.engaged.Conqueror.AccLow.PDT, {})
+	-- Conqueror Aftermath Lv.3 sets
+	sets.engaged.Conqueror.AM3 = {}
+	sets.engaged.Conqueror.AccLow.AM3 = set_combine(sets.engaged.Conqueror.AM3, {})
+	sets.engaged.Conqueror.AccHigh.AM3 = set_combine(sets.engaged.Conqueror.AccLow.AM3, {})
+	sets.engaged.Conqueror.PDT.AM3 = set_combine(sets.engaged.Conqueror.AM3, {})
+	sets.engaged.Conqueror.AccLow.PDT.AM3 = set_combine(sets.engaged.Conqueror.PDT.AM3, {})
+	sets.engaged.Conqueror.AccHigh.PDT.AM3 = set_combine(sets.engaged.Conqueror.AccLow.PDT.AM3, {})
+	
+	sets.engaged.Ukonvasara = {}
+	sets.engaged.Ukonvasara.AccLow = set_combine(sets.engaged.Ukonvasara, {})
+	sets.engaged.Ukonvasara.AccHigh = set_combine(sets.engaged.Ukonvasara.AccLow, {})
+	sets.engaged.Ukonvasara.PDT = set_combine(sets.engaged.Ukonvasara, {})
+	sets.engaged.Ukonvasara.AccLow.PDT = set_combine(sets.engaged.Ukonvasara.PDT, {})
+	sets.engaged.Ukonvasara.AccHigh.PDT = set_combine(sets.engaged.Ukonvasara.AccLow.PDT, {})
+	
+	sets.engaged.Bravura = {}
+	sets.engaged.Bravura.AccLow = set_combine(sets.engaged.Bravura, {})
+	sets.engaged.Bravura.AccHigh = set_combine(sets.engaged.Bravura.AccLow, {})
+	sets.engaged.Bravura.PDT = set_combine(sets.engaged.Bravura, {})
+	sets.engaged.Bravura.AccLow.PDT = set_combine(sets.engaged.Bravura.PDT, {})
+	sets.engaged.Bravura.AccHigh.PDT = set_combine(sets.engaged.Bravura.AccLow.PDT, {})
+	-- Bravura Aftermath sets, will only apply if aftermath, bravura, and hybridmode are on
+	sets.engaged.Bravura.PDT.AM = set_combine(sets.engaged.Bravura, {})
+	sets.engaged.Bravura.AccLow.PDT.AM = set_combine(sets.engaged.Bravura.PDT.AM , {})
+	sets.engaged.Bravura.AccHigh.PDT.AM = set_combine(sets.engaged.Bravura.AccLow.PDT.AM , {})
+	
+	sets.engaged.Ragnarok = {}
+	sets.engaged.Ragnarok.AccLow = set_combine(sets.engaged.Ragnarok, {})
+	sets.engaged.Ragnarok.AccHigh = set_combine(sets.engaged.Ragnarok.AccLow, {})
+	sets.engaged.Ragnarok.PDT = set_combine(sets.engaged.Ragnarok, {})
+	sets.engaged.Ragnarok.AccLow.PDT = set_combine(sets.engaged.Ragnarok.PDT, {})
+	sets.engaged.Ragnarok.AccHigh.PDT = set_combine(sets.engaged.Ragnarok.AccLow.PDT, {})
+	]]
+	--------------------------------------
+	-- 2H sets
+	--------------------------------------	
+	sets.engaged.2H = {
+	ammo="Ginsen",
+    head="Flam. Zucchetto +1",
+    body="Pumm. Lorica +2",
+    hands="Flam. Manopolas +2",
+    legs="Pumm. Cuisses +2",
+    feet="Pumm. Calligae +2",
+    neck="Warrior's Beads",
+    waist="Ioskeha Belt",
+    left_ear="Steelflash Earring",
+    right_ear="Bladeborn Earring",
+    left_ring="Moonbeam Ring",
+    right_ring="Flamma Ring",
+    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+	}
+	
+	sets.engaged.2H.AccLow = set_combine(sets.engaged.2H, {})
+	sets.engaged.2H.AccHigh = set_combine(sets.engaged.2H.AccLow, {})
+	sets.engaged.2H.PDT = set_combine(sets.engaged.2H, {})
+	sets.engaged.2H.AccLow.PDT = set_combine(sets.engaged.PDT, {})
+	sets.engaged.2H.AccHigh.PDT = set_combine(sets.engaged.AccLow.PDT, {})
+	--------------------------------------
+	-- DW sets
+	--------------------------------------
+    sets.engaged.DW = {
+	ammo="Ginsen",
+    head="Flam. Zucchetto +1",
+    body="Pumm. Lorica +2",
+    hands="Flam. Manopolas +2",
+    legs="Pumm. Cuisses +2",
+    feet="Pumm. Calligae +2",
+    neck="Warrior's Beads",
+    waist="Ioskeha Belt",
+    left_ear="Steelflash Earring",
+    right_ear="Bladeborn Earring",
+    left_ring="Moonbeam Ring",
+    right_ring="Flamma Ring",
+    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+	}
+	
+	sets.engaged.DW.AccLow = set_combine(sets.engaged.DW, {})
+	sets.engaged.DW.AccHigh = set_combine(sets.engaged.DW.AccLow, {})
+	sets.engaged.DW.PDT = set_combine(sets.engaged.DW, {})
+	sets.engaged.DW.AccLow.PDT = set_combine(sets.engaged.PDT, {})
+	sets.engaged.DW.AccHigh.PDT = set_combine(sets.engaged.AccLow.PDT, {})
+	
+	--------------------------------------
+	-- Custom buff sets
+	--------------------------------------
+	-- Mighty Strikes TP Gear, combines with current melee set.
+	sets.buff.MS = {ammo="Yetshila +1",neck="Portus Collar",back="Cavaros Mantle",feet="Huginn Gambieras"}
+	-- Day/Element Helm, if helm is not in inventory or wardrobe, this will not fire, for those who do not own one
+	sets.WSDayBonus = {head="Gavialis Helm"}
+	-- Earrings to use with Upheaval when TP is 3000
+	sets.VIT_earring = {ear1="Terra's Pearl",ear2="Brutal Earring"}
+	-- Earrings to use with all other weaponskills when TP is 3000
+	sets.STR_earring = {ear1="Kokou's Earring",ear2="Brutal Earring"}
+	-- Mantle to use with Upheaval on Darksday
+	sets.Upheaval_shadow = {back="Shadow Mantle"}
 end
 
+-------------------------------------------------------------------------------------------------------------------
+-- Job-specific hooks for standard casting events.
+-------------------------------------------------------------------------------------------------------------------
+
+-- Set eventArgs.handled to true if we don't want any automatic target handling to be done.
 function job_pretarget(spell, action, spellMap, eventArgs)
-    if spell.type:endswith('Magic') and buffactive.silence then
-        eventArgs.cancel = true
-        send_command('input /item "Echo Drops" <me>')
-    --elseif spell.target.distance > 8 and player.status == 'Engaged' then
-    --    eventArgs.cancel = true
-    --    add_to_chat(122,"Outside WS Range! /Canceling")
-    end
+
 end
+
 -- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
 -- Set eventArgs.useMidcastGear to true if we want midcast gear equipped on precast.
 function job_precast(spell, action, spellMap, eventArgs)
-end
- 
-function job_post_precast(spell, action, spellMap, eventArgs)
 
-    -- Make sure abilities using head gear don't swap 
-	if spell.type:lower() == 'weaponskill' then
-        -- handle Gavialis Helm
-        --[[if is_sc_element_today(spell) then
-            if state.OffenseMode.current == 'Normal' and wsList:contains(spell.english) then
-                -- do nothing
-            else
+end
+
+-- Run after the default precast() is done.
+-- eventArgs is the same one used in job_precast, in case information needs to be persisted.
+function job_post_precast(spell, action, spellMap, eventArgs)
+	if spell.type == 'WeaponSkill' then
+            if is_sc_element_today(spell) and player.inventory['Gavialis Helm'] or player.wardrobe['Gavialis Helm'] then
                 equip(sets.WSDayBonus)
             end
-        end]]
-        -- CP mantle must be worn when a mob dies, so make sure it's equipped for WS.
-        if state.CapacityMode.value then
-            equip(sets.CapacityMantle)
-        end
-        
-        if player.tp > 2999 then
-            equip(sets.BrutalLugra)
-        else -- use Lugra + moonshade
-            if world.time >= (17*60) or world.time <= (7*60) then
-                equip(sets.Lugra)
-            else
-                equip(sets.Brutal)
-            end
-        end
-        -- Use SOA neck piece for WS in rieves
-        if buffactive['Reive Mark'] then
-            equip(sets.reive)
-        end
-    end
-end
- 
--- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
-function job_midcast(spell, action, spellMap, eventArgs)
-end
- 
--- Run after the default midcast() is done.
--- eventArgs is the same one used in job_midcast, in case information needs to be persisted.
-function job_post_midcast(spell, action, spellMap, eventArgs)
-    if (state.HybridMode.current == 'PDT' and state.PhysicalDefenseMode.current == 'Reraise') then
-        equip(sets.Reraise)
-    end
-    if state.Buff.Berserk and not state.Buff.Retaliation then
-        equip(sets.buff.Berserk)
-    end
-end
- 
--- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
-function job_aftercast(spell, action, spellMap, eventArgs)
-    if state.Buff[spell.english] ~= nil then
-        state.Buff[spell.english] = not spell.interrupted or buffactive[spell.english]
-    end
+			if player.tp == 3000 then
+				if spell.english == "Upheaval" then
+					equip(sets.VIT_earring)
+				else
+					equip(sets.STR_earring)
+				end
+			end
+			if spell.english == "Upheaval" and world.day_element == 'Dark' then
+				equip(sets.Upheaval_shadow)
+			end
+	end
 end
 
-function job_post_aftercast(spell, action, spellMap, eventArgs)
-end
--------------------------------------------------------------------------------------------------------------------
--- Customization hooks for idle and melee sets, after they've been automatically constructed.
--------------------------------------------------------------------------------------------------------------------
--- Called before the Include starts constructing melee/idle/resting sets.
--- Can customize state or custom melee class values at this point.
 -- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
-function job_handle_equipping_gear(status, eventArgs)
+function job_aftercast(spell, action, spellMap, eventArgs)
+	if spell.english == "Tomahawk" and not spell.interrupted then 
+		send_command('timers create "Tomahawk" 90 down')
+	end
 end
--- Modify the default idle set after it was constructed.
-function customize_idle_set(idleSet)
-    if player.hpp < 90 then
-        idleSet = set_combine(idleSet, sets.idle.Regen)
-    end
-    if state.HybridMode.current == 'PDT' then
-        idleSet = set_combine(idleSet, sets.defense.PDT)
-    end
-    return idleSet
+
+-- Run after the default aftercast() is done.
+-- eventArgs is the same one used in job_aftercast, in case information needs to be persisted.
+function job_post_aftercast(spell, action, spellMap, eventArgs)
+
 end
- 
--- Modify the default melee set after it was constructed.
-function customize_melee_set(meleeSet)
-    if state.TreasureMode.value == 'Fulltime' then
-        meleeSet = set_combine(meleeSet, sets.TreasureHunter)
-    end
-    if state.Buff.Berserk and not state.Buff.Retaliation then
-    	meleeSet = set_combine(meleeSet, sets.buff.Berserk)
-    end
-    if state.CapacityMode.value then
-        meleeSet = set_combine(meleeSet, sets.CapacityMantle)
-    end
-    return meleeSet
-end
- 
-function check_buff(buff_name, eventArgs)
-    if state.Buff[buff_name] then
-        equip(sets.buff[buff_name] or {})
-        if state.TreasureMode.value == 'SATA' or state.TreasureMode.value == 'Fulltime' then
-            equip(sets.TreasureHunter)
-        end
-        eventArgs.handled = true
-    end
-end
+
 -------------------------------------------------------------------------------------------------------------------
--- General hooks for other events.
+-- Job-specific hooks for non-casting events.
 -------------------------------------------------------------------------------------------------------------------
- 
+
 -- Called when the player's status changes.
 function job_status_change(newStatus, oldStatus, eventArgs)
-    if newStatus == "Engaged" then
-        if buffactive.Berserk and not state.Buff.Retaliation then
-            equip(sets.buff.Berserk)
-        end
-        get_combat_weapon()
-    --elseif newStatus == 'Idle' then
-    --    determine_idle_group()
-    end
+	update_combat_weapon()
+	update_melee_groups()
+	update_combat_form()
 end
- 
+
 -- Called when a player gains or loses a buff.
 -- buff == buff gained or lost
 -- gain == true if the buff was gained, false if it was lost.
 function job_buff_change(buff, gain)
-    
-    if state.Buff[buff] ~= nil then
-        handle_equipping_gear(player.status)
-    end
-    
-    if S{'madrigal'}:contains(buff:lower()) then
-        if buffactive.madrigal and state.OffenseMode.value == 'Acc' then
-            equip(sets.MadrigalBonus)
-        end
-    end
-    -- Warp ring rule, for any buff being lost
-    if S{'Warp', 'Vocation', 'Capacity'}:contains(player.equipment.ring2) then
-        if not buffactive['Dedication'] then
-            disable('ring2')
-        end
-    else
-        enable('ring2')
-    end
-    
-    if buff == "Berserk" then
-        if gain and not buffactive['Retaliation'] then
-            equip(sets.buff.Berserk)
-        else
-            if not midaction() then
-                handle_equipping_gear(player.status)
-            end
-        end
-    end
-
-end
- 
- 
--------------------------------------------------------------------------------------------------------------------
--- User code that supplements self-commands.
--------------------------------------------------------------------------------------------------------------------
- 
--- Called by the 'update' self-command, for common needs.
--- Set eventArgs.handled to true if we don't want automatic equipping of gear.
-function job_update(cmdParams, eventArgs)
-    
-    war_sj = player.sub_job == 'WAR' or false
-    get_combat_form()
-    get_combat_weapon()
-
-end
-
-function get_custom_wsmode(spell, spellMap, default_wsmode)
-end
--------------------------------------------------------------------------------------------------------------------
--- Utility functions specific to this job.
--------------------------------------------------------------------------------------------------------------------
-function get_combat_form()
-    --if war_sj then
-        --state.CombatForm:set("War")
-    --else
-        --state.CombatForm:reset()
-    --end
-    if S{'NIN', 'DNC'}:contains(player.sub_job) and war_sub_weapons:contains(player.equipment.sub) then
-        state.CombatForm:set("DW")
-    elseif S{'SAM', 'WAR'}:contains(player.sub_job) and player.equipment.sub == 'Rinda Shield' then
-        state.CombatForm:set("OneHand")
-    else
-        state.CombatForm:reset()
-    end
-
-end
-
-function get_combat_weapon()
-    if gsList:contains(player.equipment.main) then
-        state.CombatWeapon:set("GreatSword")
-    else -- use regular set
-        state.CombatWeapon:reset()
-    end
-end
-
--- Handle notifications of general user state change.
-function job_state_change(stateField, newValue, oldValue)
-    --if stateField == 'Look Cool' then
-    --    if newValue == 'On' then
-    --        send_command('gs equip sets.cool;wait 1.2;input /lockstyle on;wait 1.2;gs c update user')
-    --        --send_command('wait 1.2;gs c update user')
-    --    else
-    --        send_command('@input /lockstyle off')
-    --    end
-    --end
-end
-
-function select_default_macro_book()
-    --Default macro set/book
-	if player.sub_job == 'NIN' then
-		set_macro_page(1, 14)
-	elseif player.sub_job == 'SAM' then
-		set_macro_page(1, 14)
-	else
-		set_macro_page(1, 14)
+	if buff == "Aftermath: Lv.3" or buff == "Aftermath" then
+		classes.CustomMeleeGroups:clear()
+		if (buff == "Aftermath: Lv.3" and gain) or buffactive["Aftermath: Lv.3"] then
+			if player.equipment.main == "Conqueror" then
+				classes.CustomMeleeGroups:append('AM3')
+				if gain then
+					send_command('timers create "Aftermath: Lv.3" 180 down;wait 120;input /echo Aftermath: Lv.3 [WEARING OFF IN 60 SEC.];wait 30;input /echo Aftermath: Lv.3 [WEARING OFF IN 30 SEC.];wait 20;input /echo Aftermath: Lv.3 [WEARING OFF IN 10 SEC.]')
+				else
+					send_command('timers delete "Aftermath: Lv.3"')
+                    add_to_chat(123,'AM3: [OFF]')
+				end
+			end
+		end
+		if (buff == "Aftermath" and gain) or buffactive.Aftermath then
+			if player.equipment.main == "Bravura" and state.HybridMode.value == 'PDT' then
+				classes.CustomMeleeGroups:append('AM')
+			end
+		end
+	end
+	if buff == "Aftermath: Lv.3" or buff == "Aftermath" then
+		handle_equipping_gear(player.status)
+	end
+	if buff == 'Blood Rage' and gain then
+		send_command('timers create "Blood Rage" 60 down abilities/00255.png')
+		else
+		send_command('timers delete "Blood Rage"')
+	end
+	if buff == 'Warcry' and gain then
+		send_command('timers create "Warcry" 60 down abilities/00255.png')
+		else
+		send_command('timers delete "Warcry"')
+	end
+	if buff == "sleep" and gain and player.hp > 200 and player.status == "Engaged" then
+		equip({neck="Berserker's Torque"})
+		else
+		handle_equipping_gear(player.status)
 	end
 end
 
+-------------------------------------------------------------------------------------------------------------------
+-- User code that supplements standard library decisions.
+-------------------------------------------------------------------------------------------------------------------
+
+-- Return a customized weaponskill mode to use for weaponskill sets.
+-- Don't return anything if you're not overriding the default value.
+function get_custom_wsmode(spell, spellMap, default_wsmode)
+	local wsmode = ''
+	if state.Buff['Mighty Strikes'] then
+        wsmode = wsmode .. 'MS'
+    end
+        if wsmode ~= '' then
+            return wsmode
+    end
+end
+
+-- Modify the default melee set after it was constructed.
+function customize_melee_set(meleeSet)
+	if buffactive["Mighty Strikes"] then
+		meleeSet = set_combine(meleeSet, sets.buff.MS)
+	end
+	return meleeSet
+end
+
+-- Called by the 'update' self-command, for common needs.
+-- Set eventArgs.handled to true if we don't want automatic equipping of gear.
+function job_update(cmdParams, eventArgs)
+	update_combat_weapon()
+	update_melee_groups()
+	update_combat_form()
+end
+
+-- Set eventArgs.handled to true if we don't want the automatic display to be run.
+function display_current_job_state(eventArgs)
+local msg = 'Melee'
+if state.CombatForm.has_value then
+msg = msg .. ' (' .. state.CombatForm.value .. ')'
+end
+if state.CombatWeapon.has_value then
+msg = msg .. ' (' .. state.CombatWeapon.value .. ')'
+end
+msg = msg .. ': '
+msg = msg .. state.OffenseMode.value
+if state.HybridMode.value ~= 'Normal' then
+msg = msg .. '/' .. state.HybridMode.value
+end
+msg = msg .. ', WS: ' .. state.WeaponskillMode.value
+if state.DefenseMode.value ~= 'None' then
+msg = msg .. ', ' .. 'Defense: ' .. state.DefenseMode.value .. ' (' .. state[state.DefenseMode.value .. 'DefenseMode'].value .. ')'
+end
+if state.Kiting.value == true then
+msg = msg .. ', Kiting'
+end
+if state.PCTargetMode.value ~= 'default' then
+msg = msg .. ', Target PC: '..state.PCTargetMode.value
+end
+if state.SelectNPCTargets.value == true then
+msg = msg .. ', Target NPCs'
+end
+add_to_chat(122, msg)
+eventArgs.handled = true
+end
+
+-------------------------------------------------------------------------------------------------------------------
+-- Utility functions specific to this job.
+-------------------------------------------------------------------------------------------------------------------
+
+-- Select default macro book on initial load or subjob change.
+function select_default_macro_book()
+	-- Default macro set/book
+	if player.sub_job == 'WAR' then
+		set_macro_page(5, 20)
+	elseif player.sub_job == 'NIN' then
+		set_macro_page(5, 20)
+	elseif player.sub_job == 'SAM' then
+		set_macro_page(5, 20)
+	else
+		set_macro_page(5, 20)
+	end
+end
+
+function update_combat_weapon()
+	state.CombatWeapon:set(player.equipment.main)
+end
+
+function update_melee_groups()
+	classes.CustomMeleeGroups:clear()
+	if buffactive['Aftermath: Lv.3'] and player.equipment.main == "Conqueror" then
+		classes.CustomMeleeGroups:append('AM3')
+	end
+	if buffactive.Aftermath and player.equipment.main == "Bravura" and state.HybridMode.value == 'PDT' then
+		classes.CustomMeleeGroups:append('AM')
+	end
+end
+
+function is_sc_element_today(spell)
+    if spell.type ~= 'WeaponSkill' then
+        return
+    end
+
+   local weaponskill_elements = S{}:
+    union(skillchain_elements[spell.skillchain_a]):
+    union(skillchain_elements[spell.skillchain_b]):
+    union(skillchain_elements[spell.skillchain_c])
+
+    if weaponskill_elements:contains(world.day_element) then
+        return true
+    else
+        return false
+    end
+end
+
+function update_combat_form()
+    -- Check for H2H or single-wielding
+    if player.equipment.sub == 'Blurred Shild +1' or player.equipment.sub == 'empty' then
+        state.CombatForm:reset()
+    else if player.equipment.sub == 'Eletta Grip' then
+		state.CombatForm:set('2H')
+	else
+        state.CombatForm:set('DW')
+    end
+end
