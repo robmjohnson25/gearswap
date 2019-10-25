@@ -59,8 +59,8 @@ function init_gear_sets()
 	
 	-- Sets to apply to arbitrary JAs
 	sets.precast.JA.Berserk = {body="Pumm. Lorica +2",feet="Agoge Calligae +1"}
-    sets.precast.JA['Aggressor'] = {head="Pumm. Mask +1",body="Agoge Lorica +1"}
-    sets.precast.JA['Mighty Strikes'] = {hands="Agoge Mufflers +1"}
+	sets.precast.JA['Aggressor'] = {head="Pumm. Mask +1",body="Agoge Lorica +1"}
+	sets.precast.JA['Mighty Strikes'] = {hands="Agoge Mufflers +1"}
 	sets.precast.JA['Blood Rage'] = {body="Rvg. Lorica +2"}
 	sets.precast.JA['Warcry'] = {head="Agoge Mask +1"}
 	sets.precast.JA['Tomahawk'] = {ammo="Thr. Tomahawk",feet="Agoge Calligae +1"}
@@ -70,27 +70,27 @@ function init_gear_sets()
 	-- Sets for specific actions within spell.type
 	sets.precast.Waltz['Healing Waltz'] = {}
 
-    -- Sets for fast cast gear for spells
+    	-- Sets for fast cast gear for spells
 	sets.precast.FC = {}
 
-    -- Fast cast gear for specific spells or spell maps
+    	-- Fast cast gear for specific spells or spell maps
 	sets.precast.FC.Utsusemi = set_combine(sets.precast.FC, {})
 
 	-- Weaponskill sets
 	sets.precast.WS = {
 	ammo="Yetshila",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Sulev. Leggings +1",
-    neck="Warrior's Beads",
-    waist="Thunder Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+    	head="Flam. Zucchetto +1",
+    	body="Pumm. Lorica +2",
+    	hands="Flam. Manopolas +2",
+    	legs="Pumm. Cuisses +2",
+    	feet="Sulev. Leggings +1",
+    	neck="Warrior's Beads",
+    	waist="Thunder Belt",
+    	left_ear="Steelflash Earring",
+    	right_ear="Bladeborn Earring",
+    	left_ring="Moonbeam Ring",
+    	right_ring="Flamma Ring",
+    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 	
 	sets.precast.WS.AccLow = set_combine(sets.precast.WS, {})
@@ -140,7 +140,7 @@ function init_gear_sets()
 	-- Midcast sets
 	--------------------------------------
 
-    -- Generic spell recast set
+    	-- Generic spell recast set
 	sets.midcast.FastRecast = {}
 		
 	-- Specific spells
@@ -158,18 +158,18 @@ function init_gear_sets()
 	-- Idle sets
 	sets.idle = {
 	ammo="Ginsen",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Pumm. Calligae +2",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+    	head="Flam. Zucchetto +1",
+    	body="Pumm. Lorica +2",
+    	hands="Flam. Manopolas +2",
+    	legs="Pumm. Cuisses +2",
+    	feet="Pumm. Calligae +2",
+    	neck="Warrior's Beads",
+    	waist="Ioskeha Belt",
+    	left_ear="Steelflash Earring",
+    	right_ear="Bladeborn Earring",
+    	left_ring="Moonbeam Ring",
+    	right_ring="Flamma Ring",
+    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 
 	sets.idle.Town = set_combine(sets.idle, {})
@@ -183,7 +183,7 @@ function init_gear_sets()
 	sets.defense.Reraise = set_combine(sets.defense.PDT, {})
 	sets.defense.MDT = {}
 
-    -- Gear to wear for kiting
+    	-- Gear to wear for kiting
 	sets.Kiting = {}
 
 	--------------------------------------
@@ -200,18 +200,18 @@ function init_gear_sets()
 	-- Equip the weapon you want to use and engage, disengage, or force update with f12, the correct gear will be used; default weapon is whats equip when file loads.
 	sets.engaged = {
 	ammo="Ginsen",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Pumm. Calligae +2",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+    	head="Flam. Zucchetto +1",
+    	body="Pumm. Lorica +2",
+    	hands="Flam. Manopolas +2",
+    	legs="Pumm. Cuisses +2",
+    	feet="Pumm. Calligae +2",
+    	neck="Warrior's Beads",
+    	waist="Ioskeha Belt",
+    	left_ear="Steelflash Earring",
+    	right_ear="Bladeborn Earring",
+    	left_ring="Moonbeam Ring",
+    	right_ring="Flamma Ring",
+    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 	
 	sets.engaged.AccLow = set_combine(sets.engaged, {})
@@ -264,18 +264,18 @@ function init_gear_sets()
 	--------------------------------------	
 	sets.engaged.2H = {
 	ammo="Ginsen",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Pumm. Calligae +2",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+    	head="Flam. Zucchetto +1",
+    	body="Pumm. Lorica +2",
+    	hands="Flam. Manopolas +2",
+    	legs="Pumm. Cuisses +2",
+    	feet="Pumm. Calligae +2",
+    	neck="Warrior's Beads",
+    	waist="Ioskeha Belt",
+    	left_ear="Steelflash Earring",
+    	right_ear="Bladeborn Earring",
+    	left_ring="Moonbeam Ring",
+    	right_ring="Flamma Ring",
+    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 	
 	sets.engaged.2H.AccLow = set_combine(sets.engaged.2H, {})
@@ -286,20 +286,20 @@ function init_gear_sets()
 	--------------------------------------
 	-- DW sets
 	--------------------------------------
-    sets.engaged.DW = {
+    	sets.engaged.DW = {
 	ammo="Ginsen",
-    head="Flam. Zucchetto +1",
-    body="Pumm. Lorica +2",
-    hands="Flam. Manopolas +2",
-    legs="Pumm. Cuisses +2",
-    feet="Pumm. Calligae +2",
-    neck="Warrior's Beads",
-    waist="Ioskeha Belt",
-    left_ear="Steelflash Earring",
-    right_ear="Bladeborn Earring",
-    left_ring="Moonbeam Ring",
-    right_ring="Flamma Ring",
-    back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
+    	head="Flam. Zucchetto +1",
+    	body="Pumm. Lorica +2",
+    	hands="Flam. Manopolas +2",
+    	legs="Pumm. Cuisses +2",
+    	feet="Pumm. Calligae +2",
+    	neck="Warrior's Beads",
+    	waist="Ioskeha Belt",
+    	left_ear="Steelflash Earring",
+    	right_ear="Bladeborn Earring",
+    	left_ring="Moonbeam Ring",
+    	right_ring="Flamma Ring",
+    	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}},
 	}
 	
 	sets.engaged.DW.AccLow = set_combine(sets.engaged.DW, {})
